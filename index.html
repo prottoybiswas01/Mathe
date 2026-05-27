@@ -1,0 +1,804 @@
+```html
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>আই-বিম স্ট্রেস অ্যানালাইজার ও সমাধানকারী</title>
+    <!-- Google Fonts for premium Bangla and English typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Hind Siliguri', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar and premium details */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .math-font {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-slate-900 to-indigo-950 text-white shadow-md py-6 px-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <span class="bg-indigo-500/30 text-indigo-300 text-xs font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider">ইঞ্জিনিয়ারিং টিউটোরিয়াল</span>
+                <h1 class="text-2xl md:text-3xl font-bold tracking-tight mt-1">I-বিম বেন্ডিং ও শেয়ারিং পীড়ন সমাধানকারী</h1>
+                <p class="text-slate-300 text-sm mt-1">আপনার বইয়ের [উদাহরণ ২.১] ম্যাথটির ইন্টারেক্টিভ ও সচিত্র সহজ ব্যাখ্যা</p>
+            </div>
+            <button onclick="resetToExamValues()" class="bg-indigo-600 hover:bg-indigo-550 transition-colors text-white font-medium text-sm px-5 py-2.5 rounded-lg shadow-lg shadow-indigo-600/20 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 15H19" />
+                </svg>
+                বইয়ের অংকের মান লোড করুন
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left Column: Inputs & Visuals -->
+        <div class="lg:col-span-5 flex flex-col gap-6">
+            
+            <!-- Input Parameters Card -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200/80 p-5">
+                <div class="flex items-center gap-2 pb-4 mb-4 border-b border-slate-100">
+                    <div class="p-1.5 bg-indigo-50 text-indigo-600 rounded-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                        </svg>
+                    </div>
+                    <h2 class="text-lg font-bold text-slate-900">ইনপুট প্যারামিটার সমূহ (মান পরিবর্তন করুন)</h2>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Beam Length -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">বিমের মোট দৈর্ঘ্য, L (মিটার)</label>
+                        <div class="relative rounded-md shadow-sm">
+                            <input type="number" id="param-L" step="0.1" value="10" oninput="calculateAll()" class="block w-full rounded-lg border-slate-200 pl-3 pr-12 pt-2.5 pb-2.5 text-slate-900 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border">
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                                <span class="text-gray-400 sm:text-sm">m</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Flange Section -->
+                    <div class="bg-indigo-50/50 p-3.5 rounded-lg border border-indigo-100/60">
+                        <h3 class="text-xs font-bold text-indigo-900 uppercase tracking-wider mb-2.5">ফ্ল্যাঞ্জ (Flange) এর মাপ</h3>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs text-slate-500 mb-1">প্রস্থ, B (সেমি)</label>
+                                <input type="number" id="param-B" step="0.5" value="15" oninput="calculateAll()" class="block w-full rounded-md border-slate-200 p-2 text-slate-900 focus:border-indigo-500 focus:ring-indigo-500 text-sm border">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-slate-500 mb-1">পুরুত্ব, t_f (সেমি)</label>
+                                <input type="number" id="param-tf" step="0.1" value="2" oninput="calculateAll()" class="block w-full rounded-md border-slate-200 p-2 text-slate-900 focus:border-indigo-500 focus:ring-indigo-500 text-sm border">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Web Section -->
+                    <div class="bg-emerald-50/50 p-3.5 rounded-lg border border-emerald-100/60">
+                        <h3 class="text-xs font-bold text-emerald-900 uppercase tracking-wider mb-2.5">ওয়েব (Web) এর মাপ</h3>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs text-slate-500 mb-1">উচ্চতা, h_w (সেমি)</label>
+                                <input type="number" id="param-hw" step="0.5" value="30" oninput="calculateAll()" class="block w-full rounded-md border-slate-200 p-2 text-slate-900 focus:border-indigo-500 focus:ring-indigo-500 text-sm border">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-slate-500 mb-1">পুরুত্ব, t_w (সেমি)</label>
+                                <input type="number" id="param-tw" step="0.1" value="1" oninput="calculateAll()" class="block w-full rounded-md border-slate-200 p-2 text-slate-900 focus:border-indigo-500 focus:ring-indigo-500 text-sm border">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Safety limits -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">নিরাপদ বেন্ডিং পীড়ন (S)</label>
+                            <div class="relative rounded-md shadow-sm">
+                                <input type="number" id="param-S" step="10" value="1400" oninput="calculateAll()" class="block w-full rounded-md border-slate-200 p-2 pr-16 text-slate-900 focus:border-indigo-500 focus:ring-indigo-500 text-sm border">
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                                    <span class="text-gray-400 text-xs">kg/cm²</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">নিরাপদ শেয়ারিং পীড়ন (S_s)</label>
+                            <div class="relative rounded-md shadow-sm">
+                                <input type="number" id="param-Ss" step="10" value="800" oninput="calculateAll()" class="block w-full rounded-md border-slate-200 p-2 pr-16 text-slate-900 focus:border-indigo-500 focus:ring-indigo-500 text-sm border">
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                                    <span class="text-gray-400 text-xs">kg/cm²</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Density -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">বিমের উপাদানের ঘনত্ব (ρ)</label>
+                        <div class="relative rounded-md shadow-sm">
+                            <input type="number" id="param-rho" step="50" value="7850" oninput="calculateAll()" class="block w-full rounded-md border-slate-200 p-2 pr-16 text-slate-900 focus:border-indigo-500 focus:ring-indigo-500 text-sm border">
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                                <span class="text-gray-400 text-xs">kg/m³</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visualizer Card -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200/80 p-5 flex flex-col items-center">
+                <div class="w-full flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+                    <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                        <span class="inline-block w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+                        I-সেকশন লাইভ ড্রয়িং (Dynamic Diagram)
+                    </h3>
+                    <span class="text-xs text-slate-400 font-medium">(মাপ অনুযায়ী স্বয়ংক্রিয়ভাবে পরিবর্তিত হয়)</span>
+                </div>
+                <canvas id="sectionCanvas" width="300" height="350" class="border border-slate-100 rounded-lg bg-slate-50/50"></canvas>
+            </div>
+
+        </div>
+
+        <!-- Right Column: Outputs and Explanations -->
+        <div class="lg:col-span-7 flex flex-col gap-6">
+            
+            <!-- Real-time Result Summary Card -->
+            <div class="bg-gradient-to-br from-indigo-900 to-slate-900 text-white rounded-xl p-6 shadow-lg shadow-indigo-950/10 relative overflow-hidden">
+                <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-indigo-500/10 rounded-full blur-xl"></div>
+                <span class="bg-emerald-500/20 text-emerald-300 text-xs font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider">ফলাফল সারসংক্ষেপ</span>
+                <h2 class="text-xl font-bold mt-2">বিমটি নিরাপদে সর্বোচ্চ যে লোড বহন করতে পারবে:</h2>
+                
+                <div class="flex items-baseline gap-2 mt-4">
+                    <span id="final-load" class="text-4xl md:text-5xl font-black text-emerald-400 math-font">0.00</span>
+                    <span class="text-xl text-slate-300 font-semibold">kg (কেজি)</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 pt-6 border-t border-white/10">
+                    <div>
+                        <p class="text-xs text-slate-400 uppercase tracking-wider">বেন্ডিং পীড়ন অনুযায়ী লোড সীমা</p>
+                        <p class="text-lg font-bold text-slate-200 mt-1"><span id="bending-load" class="math-font">0.00</span> kg</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-400 uppercase tracking-wider">শেয়ারিং পীড়ন অনুযায়ী লোড সীমা</p>
+                        <p class="text-lg font-bold text-slate-200 mt-1"><span id="shear-load" class="math-font">0.00</span> kg</p>
+                    </div>
+                </div>
+
+                <div class="mt-4 bg-white/5 rounded-lg p-3 text-xs text-slate-300 flex items-start gap-2.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span><strong>ব্যাখ্যা:</strong> বিমের ক্ষেত্রে যে লোডটির মান ছোট (Minimum), বিমটি সেই লোডেই প্রথম ভেঙে পড়বে। তাই নিরাপদ সর্বোচ্চ লোড হবে এই দুটির মধ্যে যেটি <strong>সবচেয়ে ছোট</strong>।</span>
+                </div>
+            </div>
+
+            <!-- Interactive Tab buttons -->
+            <div class="flex border-b border-slate-200 gap-1 bg-slate-100 p-1 rounded-lg">
+                <button onclick="switchTab('solution')" id="tab-btn-solution" class="flex-1 py-2.5 px-4 text-sm font-medium rounded-md transition-all text-center focus:outline-none bg-white text-slate-900 shadow-sm">
+                    ধাপ-ভিত্তিক সমাধান (Solution Steps)
+                </button>
+                <button onclick="switchTab('theory')" id="tab-btn-theory" class="flex-1 py-2.5 px-4 text-sm font-medium rounded-md transition-all text-center focus:outline-none text-slate-600 hover:text-slate-900">
+                    ব্যবহারিক সূত্রসমূহ (Formulas)
+                </button>
+            </div>
+
+            <!-- Tab Content: Solution -->
+            <div id="tab-solution" class="space-y-6">
+                
+                <!-- Step 1 Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200/80 p-5">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 font-bold flex items-center justify-center text-sm shrink-0">১</div>
+                        <div>
+                            <h3 class="font-bold text-slate-950 text-md">বিমের ক্ষেত্রফল ও নিজস্ব ওজন নির্ণয়</h3>
+                            <p class="text-xs text-slate-400">Section Area & Self Weight Calculation</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3 text-sm text-slate-700">
+                        <p>I-সেকশনটির মোট ক্ষেত্রফল, $A$ কে আমরা তিনটি ভাগে ভাগ করতে পারি (২টি ফ্ল্যাঞ্জ এবং ১টি ওয়েব):</p>
+                        <div class="bg-slate-50 p-4 rounded-lg space-y-2 border border-slate-100 font-mono text-xs md:text-sm">
+                            <div class="flex justify-between">
+                                <span>১টি ফ্ল্যাঞ্জের ক্ষেত্রফল (Flange Area):</span>
+                                <span class="font-bold text-slate-900"><span id="step1-A-flange">15 × 2 = 30</span> cm²</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>১টি ওয়েবের ক্ষেত্রফল (Web Area):</span>
+                                <span class="font-bold text-slate-900"><span id="step1-A-web">30 × 1 = 30</span> cm²</span>
+                            </div>
+                            <div class="border-t border-slate-200 my-1"></div>
+                            <div class="flex justify-between text-indigo-600 font-bold">
+                                <span>মোট ক্ষেত্রফল (Total Area, A):</span>
+                                <span>(2 × <span id="step1-A-flange-val">30</span>) + <span id="step1-A-web-val">30</span> = <span id="step1-total-A">90</span> cm²</span>
+                            </div>
+                            <div class="flex justify-between text-indigo-600">
+                                <span>মিটার এককে ক্ষেত্রফল:</span>
+                                <span>A = <span id="step1-total-A-m2">0.0090</span> m²</span>
+                            </div>
+                        </div>
+
+                        <p>বিমের মোট দৈর্ঘ্য $L = <span id="step1-L">10</span> \text{ m}$ এবং ঘনত্ব $\rho = <span id="step1-rho">7850</span> \text{ kg/m³}$ হলে:</p>
+                        <div class="bg-slate-50 p-4 rounded-lg space-y-2 border border-slate-100 font-mono text-xs md:text-sm">
+                            <div class="flex justify-between">
+                                <span>বিমের মোট আয়তন (Volume, V):</span>
+                                <span class="font-bold text-slate-900">A × L = <span id="step1-vol">0.09</span> m³</span>
+                            </div>
+                            <div class="flex justify-between text-emerald-600 font-bold">
+                                <span>বিমের নিজস্ব ওজন (Self-Weight, W):</span>
+                                <span>V × ρ = <span id="step1-weight">706.50</span> kg</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-400 italic">*এই নিজস্ব ওজনটি বিমের উপর একটি সমভাবে বিস্তৃত লোড (Uniformly Distributed Load) হিসেবে কাজ করবে।</p>
+                    </div>
+                </div>
+
+                <!-- Step 2 Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200/80 p-5">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 font-bold flex items-center justify-center text-sm shrink-0">২</div>
+                        <div>
+                            <h3 class="font-bold text-slate-950 text-md">মোমেন্ট অফ ইনার্শিয়া ($I$) নির্ণয়</h3>
+                            <p class="text-xs text-slate-400">Moment of Inertia (I) about Neutral Axis</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3 text-sm text-slate-700">
+                        <p>প্যারালাল এক্সিস থিওরেম (Parallel Axis Theorem) ব্যবহার করে কেন্দ্রগামী অক্ষের সাপেক্ষে মোমেন্ট অফ ইনার্শিয়া $I$ বের করি:</p>
+                        <p class="bg-indigo-50/50 p-3 rounded-lg text-xs md:text-sm text-indigo-900 leading-relaxed font-semibold">
+                            $I = 2 \times \left[ \frac{B \cdot t_f^3}{12} + A_f \cdot h_c^2 \right] + \frac{t_w \cdot h_w^3}{12}$
+                        </p>
+                        <p>এখানে, $h_c$ হলো ফ্ল্যাঞ্জের ভরকেন্দ্র হতে নিরপেক্ষ অক্ষের দূরত্ব = $(\frac{h_w}{2} + \frac{t_f}{2})$</p>
+                        
+                        <div class="bg-slate-50 p-4 rounded-lg space-y-2 border border-slate-100 font-mono text-xs md:text-sm">
+                            <div class="flex justify-between">
+                                <span>ফ্ল্যাঞ্জের ভরকেন্দ্রের দূরত্ব (h_c):</span>
+                                <span class="font-bold text-slate-900"><span id="step2-hc-formula">15 + 1</span> = <span id="step2-hc-val">16</span> cm</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>২টি ফ্ল্যাঞ্জের ইনার্শিয়া (I_f):</span>
+                                <span class="font-bold text-slate-900"><span id="step2-If">15380.00</span> cm⁴</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>ওয়েবের ইনার্শিয়া (I_w):</span>
+                                <span class="font-bold text-slate-900"><span id="step2-Iw">2250.00</span> cm⁴</span>
+                            </div>
+                            <div class="border-t border-slate-200 my-1"></div>
+                            <div class="flex justify-between text-indigo-600 font-bold">
+                                <span>মোট মোমেন্ট অফ ইনার্শিয়া (I):</span>
+                                <span>I = <span id="step2-Itotal">17630.00</span> cm⁴</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3 Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200/80 p-5">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 font-bold flex items-center justify-center text-sm shrink-0">৩</div>
+                        <div>
+                            <h3 class="font-bold text-slate-950 text-md">সর্বোচ্চ বেন্ডিং মোমেন্ট ($M$) এর সমীকরণ</h3>
+                            <p class="text-xs text-slate-400">Maximum Bending Moment Equation</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3 text-sm text-slate-700">
+                        <p>বিমের মাঝখানে একটি কেন্দ্রভুত লোড $P$ এবং বিমের নিজস্ব ওজন $W$ এর জন্য সাপোর্ট প্রতিক্রিয়া বল:</p>
+                        <p class="bg-slate-50 p-3 rounded-lg text-xs md:text-sm font-mono text-center">
+                            $R_1 = R_2 = \frac{W + P}{2} = \frac{\text{<span id="step3-W">706.5</span>} + P}{2} = \text{<span id="step3-halfW">353.25</span>} + 0.5P$
+                        </p>
+                        <p>বিমের ঠিক মাঝখানে (Span/2 দূরত্বের) সর্বোচ্চ বেন্ডিং মোমেন্ট হবে:</p>
+                        <div class="bg-slate-50 p-4 rounded-lg space-y-2 border border-slate-100 font-mono text-xs md:text-sm">
+                            <div>$M_{max} = R_1 \times \frac{L}{2} - w \times \frac{L}{2} \times \frac{L}{4}$  <span class="text-slate-400 text-xs">(যেখানে, $w = W/L$ বা লোড প্রতি মিটার)</span></div>
+                            <div class="border-t border-slate-200 my-1"></div>
+                            <div class="text-indigo-600 font-semibold">
+                                $M_{max} = (<span id="step3-eq1">353.25</span> + 0.5P) \times <span id="step3-eq2">5</span> - <span id="step3-eq3">70.65</span> \times <span id="step3-eq4">5</span> \times <span id="step3-eq5">2.5</span>$
+                            </div>
+                            <div class="text-indigo-600 font-semibold">
+                                $M_{max} = <span id="step3-eq6">250</span>P + <span id="step3-eq7">88312.5</span> \text{ kg-cm}$
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4 Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200/80 p-5">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 font-bold flex items-center justify-center text-sm shrink-0">৪</div>
+                        <div>
+                            <h3 class="font-bold text-slate-950 text-md">বেন্ডিং সীমার সাপেক্ষে $P_b$ নির্ণয়</h3>
+                            <p class="text-xs text-slate-400">Load P based on Bending Stress</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3 text-sm text-slate-700">
+                        <p>বেন্ডিং সমীকরণ হতে আমরা জানি, $M = \frac{S \cdot I}{y}$</p>
+                        <p>যেখানে, নিরপেক্ষ অক্ষ হতে সর্বোচ্চ দূরত্ব $y = \frac{D}{2} = \frac{\text{<span id="step4-D">34</span>}}{2} = \text{<span id="step4-y">17</span> সেমি}$।</p>
+                        
+                        <div class="bg-slate-50 p-4 rounded-lg space-y-2 border border-slate-100 font-mono text-xs md:text-sm">
+                            <div class="flex justify-between">
+                                <span>অনুমোদনযোগ্য সর্বোচ্চ মোমেন্ট, M:</span>
+                                <span><span class="text-indigo-600 font-bold"><span id="step4-allowableM">1451882.4</span> kg-cm</span></span>
+                            </div>
+                        </div>
+
+                        <p>এবার সমীকরণ দুটিকে সমান ধরে:</p>
+                        <div class="bg-indigo-50/60 p-4 rounded-lg space-y-1.5 border border-indigo-100 font-mono text-xs md:text-sm">
+                            <div>$\text{<span id="step4-C2">250</span>}P + \text{<span id="step4-C1">88312.5</span>} = \text{<span id="step4-allowableM-val">1451882.4</span>}$</div>
+                            <div>$\text{<span id="step4-C2-2">250</span>}P = \text{<span id="step4-allowableM-minus-C1">1363569.9</span>}$</div>
+                            <div class="text-emerald-600 font-bold">$\therefore P_b = \text{<span id="step4-Pbending">5454.28</span> kg}$</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5 Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200/80 p-5">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 font-bold flex items-center justify-center text-sm shrink-0">৫</div>
+                        <div>
+                            <h3 class="font-bold text-slate-950 text-md">ফার্স্ট মোমেন্ট অফ এরিয়া ($Q$) নির্ণয়</h3>
+                            <p class="text-xs text-slate-400">First Moment of Area (Q)</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3 text-sm text-slate-700">
+                        <p>নিরপেক্ষ অক্ষ (Neutral Axis) এর উপরের অংশের ক্ষেত্রফলগুলোর প্রথম মোমেন্ট ($Q$):</p>
+                        <p class="bg-indigo-50/50 p-3 rounded-lg text-xs md:text-sm text-indigo-900 font-semibold text-center">
+                            $Q = A_{flange} \times y_{flange} + A_{half\_web} \times y_{half\_web}$
+                        </p>
+                        
+                        <div class="bg-slate-50 p-4 rounded-lg space-y-2 border border-slate-100 font-mono text-xs md:text-sm">
+                            <div class="flex justify-between">
+                                <span>ফ্ল্যাঞ্জ অংশ:</span>
+                                <span>(<span id="step5-B">15</span> × <span id="step5-tf">2</span>) × <span id="step5-hc">16</span> = <span id="step5-Q1">480</span> cm³</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>অর্ধেক ওয়েব অংশ:</span>
+                                <span>(<span id="step5-tw">1</span> × <span id="step5-halfhw">15</span>) × <span id="step5-halfhw-cent">7.5</span> = <span id="step5-Q2">112.5</span> cm³</span>
+                            </div>
+                            <div class="border-t border-slate-200 my-1"></div>
+                            <div class="flex justify-between text-indigo-600 font-bold">
+                                <span>মোট Q:</span>
+                                <span>Q = <span id="step5-Qtotal">592.5</span> cm³</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 6 Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200/80 p-5">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 font-bold flex items-center justify-center text-sm shrink-0">৬</div>
+                        <div>
+                            <h3 class="font-bold text-slate-950 text-md">শেয়ারিং সীমার সাপেক্ষে $P_s$ নির্ণয়</h3>
+                            <p class="text-xs text-slate-400">Load P based on Shearing Stress</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3 text-sm text-slate-700">
+                        <p>শেয়ারিং পীড়নের সূত্র হতে পাই, $S_s = \frac{V \cdot Q}{I \cdot b}$</p>
+                        <p>যেখানে, সর্বোচ্চ শেয়ার বল $V = R_1 = \text{<span id="step6-halfW">353.25</span>} + 0.5P$ এবং নিরপেক্ষ অক্ষে বিমের প্রস্থ $b = t_w = \text{<span id="step6-b">1</span> সেমি}$।</p>
+                        
+                        <div class="bg-slate-50 p-4 rounded-lg space-y-2 border border-slate-100 font-mono text-xs md:text-sm">
+                            <div class="flex justify-between">
+                                <span>নিরাপদ শেয়ারিং পীড়ন, S_s:</span>
+                                <span><span id="step6-Ss">800</span> kg/cm²</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>অনুমোদনযোগ্য সর্বোচ্চ শেয়ার বল, V:</span>
+                                <span>V = <span class="text-indigo-600 font-bold"><span id="step6-allowableV">23804.05</span> kg</span></span>
+                            </div>
+                        </div>
+
+                        <p>এবার সমীকরণ সাজিয়ে পাই:</p>
+                        <div class="bg-indigo-50/60 p-4 rounded-lg space-y-1.5 border border-indigo-100 font-mono text-xs md:text-sm">
+                            <div>$0.5P + \text{<span id="step6-halfW-val">353.25</span>} = \text{<span id="step6-allowableV-val">23804.05</span>}$</div>
+                            <div>$0.5P = \text{<span id="step6-diff">23450.80</span>}$</div>
+                            <div class="text-emerald-600 font-bold">$\therefore P_s = \text{<span id="step6-Pshear">46901.61</span> kg}$</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Final Card -->
+                <div class="bg-emerald-50 rounded-xl shadow-sm border border-emerald-200/80 p-5">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="p-2 bg-emerald-500 text-white rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-emerald-950 text-md">চূড়ান্ত সিদ্ধান্ত ও তুলনা</h3>
+                            <p class="text-xs text-emerald-600">Comparison & Recommendation</p>
+                        </div>
+                    </div>
+                    
+                    <div class="text-sm text-emerald-950 space-y-3 leading-relaxed">
+                        <p>আমরা দেখতে পাচ্ছি যে,</p>
+                        <ul class="list-disc list-inside space-y-1.5 font-medium pl-2 text-slate-800">
+                            <li>বেন্ডিং অনুযায়ী লোড বহন ক্ষমতা $P_b = \text{<span id="step7-Pb">5454.28</span> kg}$</li>
+                            <li>শেয়ারিং অনুযায়ী লোড বহন ক্ষমতা $P_s = \text{<span id="step7-Ps">46901.61</span> kg}$</li>
+                        </ul>
+                        <p>যেহেতু বেন্ডিংয়ে লোড বহন ক্ষমতা কম, সেহেতু বিমটির উপর বেশি ওজন চাপালে এটি প্রথমে বেন্ডিংয়েই (অর্থাৎ বাঁকা হয়ে বা ফেটে) ফেইল করবে।</p>
+                        <div class="bg-emerald-600/10 p-3.5 rounded-lg border border-emerald-600/30 font-bold text-center text-emerald-900 text-base">
+                            নিরাপদ সর্বোচ্চ লোড (Safe Load, P) = <span id="step7-Pfinal">5454.28</span> kg
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Tab Content: Theory & Formulas -->
+            <div id="tab-theory" class="hidden space-y-6">
+                <!-- Moment of Inertia explanation -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200/80 p-5">
+                    <h3 class="text-md font-bold text-slate-900 mb-3 flex items-center gap-2">
+                        <span class="w-1.5 h-4 bg-indigo-600 rounded-sm inline-block"></span>
+                        মোমেন্ট অফ ইনার্শিয়া (Moment of Inertia) কী?
+                    </h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        কোনো বিমের বাঁকানো বা বেন্ডিং প্রতিরোধের ক্ষমতা প্রকাশ পায় তার মোমেন্ট অফ ইনার্শিয়া ($I$) দিয়ে। I-সেকশনের ক্ষেত্রে নিরপেক্ষ অক্ষের সাপেক্ষে এর মান সবচেয়ে বেশি পাওয়া যায়, যা বিমকে শক্তিশালী করে তোলে। এই কারণেই বহুতল ভবনে বা রেললাইনে I-সেকশনের বিম বেশি ব্যবহার করা হয়।
+                    </p>
+                </div>
+
+                <!-- Parallel Axis Theorem explanation -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200/80 p-5">
+                    <h3 class="text-md font-bold text-slate-900 mb-3 flex items-center gap-2">
+                        <span class="w-1.5 h-4 bg-indigo-600 rounded-sm inline-block"></span>
+                        প্যারালাল এক্সিস থিওরেম (Parallel Axis Theorem)
+                    </h3>
+                    <p class="text-sm text-slate-600 leading-relaxed mb-3">
+                        যদি কোনো সেকশনের নিজস্ব ভরকেন্দ্র ও বিমের কেন্দ্রীয় নিরপেক্ষ অক্ষ আলাদা অবস্থানে থাকে, তবে তার মোমেন্ট অফ ইনার্শিয়া নির্ণয়ের জন্য এই থিওরেমটি ব্যবহার করা হয়:
+                    </p>
+                    <p class="bg-slate-50 p-3 rounded-lg text-xs md:text-sm font-mono text-center mb-3">
+                        $I = I_{centroid} + A \cdot d^2$
+                    </p>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        এখানে $I_{centroid}$ হলো নিজস্ব ভরকেন্দ্রগামী অক্ষের সাপেক্ষে ইনার্শিয়া ($\frac{bd^3}{12}$), $A$ হলো ক্ষেত্রফল এবং $d$ হলো নিজস্ব ভরকেন্দ্র হতে নিরপেক্ষ অক্ষের লম্ব দূরত্ব।
+                    </p>
+                </div>
+
+                <!-- Bending Equation explanation -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200/80 p-5">
+                    <h3 class="text-md font-bold text-slate-900 mb-3 flex items-center gap-2">
+                        <span class="w-1.5 h-4 bg-indigo-600 rounded-sm inline-block"></span>
+                        বেন্ডিং সমীকরণ (Flexural Formula)
+                    </h3>
+                    <p class="text-sm text-slate-600 leading-relaxed mb-3">
+                        বিমের বেন্ডিংয়ের ফলে উৎপন্ন পীড়নের সাধারণ সমীকরণ:
+                    </p>
+                    <p class="bg-slate-50 p-3 rounded-lg text-xs md:text-sm font-mono text-center">
+                        $\frac{M}{I} = \frac{S}{y} \implies M = \frac{S \cdot I}{y}$
+                    </p>
+                    <p class="text-sm text-slate-600 leading-relaxed mt-3">
+                        এখানে $S$ হলো বেন্ডিং পীড়ন এবং $y$ হলো নিরপেক্ষ অক্ষ থেকে বিমের সবচেয়ে দূরের ফাইবারের লম্ব দূরত্ব।
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-6 text-center text-xs border-t border-slate-800">
+        <p>© 2026 আই-বিম ডিজাইন ও অ্যানালাইজার টুল | ইঞ্জিনিয়ারিং শিক্ষা সহজ হোক</p>
+    </footer>
+
+    <!-- Logic Script -->
+    <script>
+        // Global Variables
+        let L, B, tf, hw, tw, S, Ss, rho;
+
+        function resetToExamValues() {
+            document.getElementById('param-L').value = 10;
+            document.getElementById('param-B').value = 15;
+            document.getElementById('param-tf').value = 2;
+            document.getElementById('param-hw').value = 30;
+            document.getElementById('param-tw').value = 1;
+            document.getElementById('param-S').value = 1400;
+            document.getElementById('param-Ss').value = 800;
+            document.getElementById('param-rho').value = 7850;
+            calculateAll();
+        }
+
+        function calculateAll() {
+            // Get inputs
+            L = parseFloat(document.getElementById('param-L').value) || 10;
+            B = parseFloat(document.getElementById('param-B').value) || 15;
+            tf = parseFloat(document.getElementById('param-tf').value) || 2;
+            hw = parseFloat(document.getElementById('param-hw').value) || 30;
+            tw = parseFloat(document.getElementById('param-tw').value) || 1;
+            S = parseFloat(document.getElementById('param-S').value) || 1400;
+            Ss = parseFloat(document.getElementById('param-Ss').value) || 800;
+            rho = parseFloat(document.getElementById('param-rho').value) || 7850;
+
+            // Total overall height
+            const D = hw + (2 * tf);
+
+            // Area calculation
+            const A_flange = B * tf;
+            const A_web = hw * tw;
+            const totalA = (2 * A_flange) + A_web; // cm²
+            const totalAm2 = totalA / 10000; // m²
+
+            // Volume and Weight
+            const volume = totalAm2 * L; // m³
+            const totalWeight = volume * rho; // kg
+            const weightPerMeter = totalWeight / L; // kg/m
+
+            // Moment of Inertia (I) about Neutral Axis
+            const hc = (hw / 2) + (tf / 2); // distance from NA to flange centroid
+            const If_flanges = 2 * ( (B * Math.pow(tf, 3) / 12) + (A_flange * Math.pow(hc, 2)) );
+            const Iw_web = (tw * Math.pow(hw, 3)) / 12;
+            const totalI = If_flanges + Iw_web; // cm⁴
+
+            // Bending moment constants (Max moment occurs at middle, M_max = C2*P + C1)
+            // L is in meters. We want M in kg-cm.
+            // R_1 = (totalWeight + P) / 2 = halfW + 0.5P
+            const halfW = totalWeight / 2;
+            // M_max = R_1 * L/2 - w * (L/2) * (L/4) = R_1 * L/2 - W * L / 8
+            // We multiply by 100 to convert kg-m to kg-cm
+            const C2 = 0.5 * (L / 2) * 100; // factor of P (kg-cm)
+            const C1 = (halfW * (L / 2) - weightPerMeter * (L/2) * (L/4)) * 100; // constant part (kg-cm)
+            
+            // Allowable bending moment: M_allowable = S * I / y
+            const y = D / 2;
+            const M_allowable = (S * totalI) / y;
+
+            // Pbending = (M_allowable - C1) / C2
+            const Pbending = (M_allowable - C1) / C2;
+
+            // First Moment of Area (Q)
+            // Q = A_flange * hc + A_half_web * (hw/4)
+            const Q = (A_flange * hc) + (tw * (hw / 2) * (hw / 4));
+
+            // Allowable Shear Force: V_allowable = Ss * I * tw / Q (since width b at NA is tw)
+            const V_allowable = (Ss * totalI * tw) / Q;
+
+            // V_max occurs at support: V_max = halfW + 0.5P
+            // Pshear = (V_allowable - halfW) / 0.5
+            const Pshear = (V_allowable - halfW) / 0.5;
+
+            // Safe Load is the minimum of both
+            const Psafe = Math.min(Pbending, Pshear);
+
+            // Display results in UI
+            document.getElementById('final-load').innerText = Psafe.toFixed(2);
+            document.getElementById('bending-load').innerText = Pbending.toFixed(2);
+            document.getElementById('shear-load').innerText = Pshear.toFixed(2);
+
+            // Update solutions steps
+            // Step 1
+            document.getElementById('step1-A-flange').innerText = `${B} × ${tf} = ${A_flange.toFixed(0)}`;
+            document.getElementById('step1-A-web').innerText = `${hw} × ${tw} = ${A_web.toFixed(0)}`;
+            document.getElementById('step1-A-flange-val').innerText = A_flange.toFixed(0);
+            document.getElementById('step1-A-web-val').innerText = A_web.toFixed(0);
+            document.getElementById('step1-total-A').innerText = totalA.toFixed(1);
+            document.getElementById('step1-total-A-m2').innerText = totalAm2.toFixed(4);
+            document.getElementById('step1-L').innerText = L.toFixed(1);
+            document.getElementById('step1-rho').innerText = rho.toFixed(0);
+            document.getElementById('step1-vol').innerText = volume.toFixed(3);
+            document.getElementById('step1-weight').innerText = totalWeight.toFixed(2);
+
+            // Step 2
+            document.getElementById('step2-hc-formula').innerText = `(${hw}/2) + (${tf}/2)`;
+            document.getElementById('step2-hc-val').innerText = hc.toFixed(1);
+            document.getElementById('step2-If').innerText = If_flanges.toFixed(2);
+            document.getElementById('step2-Iw').innerText = Iw_web.toFixed(2);
+            document.getElementById('step2-Itotal').innerText = totalI.toFixed(2);
+
+            // Step 3
+            document.getElementById('step3-W').innerText = totalWeight.toFixed(2);
+            document.getElementById('step3-halfW').innerText = halfW.toFixed(2);
+            document.getElementById('step3-eq1').innerText = halfW.toFixed(2);
+            document.getElementById('step3-eq2').innerText = (L/2).toFixed(1);
+            document.getElementById('step3-eq3').innerText = weightPerMeter.toFixed(2);
+            document.getElementById('step3-eq4').innerText = (L/2).toFixed(1);
+            document.getElementById('step3-eq5').innerText = (L/4).toFixed(2);
+            document.getElementById('step3-eq6').innerText = C2.toFixed(1);
+            document.getElementById('step3-eq7').innerText = C1.toFixed(1);
+
+            // Step 4
+            document.getElementById('step4-D').innerText = D.toFixed(1);
+            document.getElementById('step4-y').innerText = y.toFixed(1);
+            document.getElementById('step4-allowableM').innerText = M_allowable.toFixed(1);
+            document.getElementById('step4-C2').innerText = C2.toFixed(1);
+            document.getElementById('step4-C1').innerText = C1.toFixed(1);
+            document.getElementById('step4-allowableM-val').innerText = M_allowable.toFixed(1);
+            document.getElementById('step4-C2-2').innerText = C2.toFixed(1);
+            document.getElementById('step4-allowableM-minus-C1').innerText = (M_allowable - C1).toFixed(1);
+            document.getElementById('step4-Pbending').innerText = Pbending.toFixed(2);
+
+            // Step 5
+            document.getElementById('step5-B').innerText = B.toFixed(0);
+            document.getElementById('step5-tf').innerText = tf.toFixed(0);
+            document.getElementById('step5-hc').innerText = hc.toFixed(1);
+            document.getElementById('step5-tw').innerText = tw.toFixed(0);
+            document.getElementById('step5-halfhw').innerText = (hw/2).toFixed(1);
+            document.getElementById('step5-halfhw-cent').innerText = (hw/4).toFixed(2);
+            document.getElementById('step5-Q1').innerText = (A_flange * hc).toFixed(1);
+            document.getElementById('step5-Q2').innerText = (tw * (hw/2) * (hw/4)).toFixed(1);
+            document.getElementById('step5-Qtotal').innerText = Q.toFixed(1);
+
+            // Step 6
+            document.getElementById('step6-halfW').innerText = halfW.toFixed(2);
+            document.getElementById('step6-b').innerText = tw.toFixed(0);
+            document.getElementById('step6-Ss').innerText = Ss.toFixed(0);
+            document.getElementById('step6-allowableV').innerText = V_allowable.toFixed(2);
+            document.getElementById('step6-halfW-val').innerText = halfW.toFixed(2);
+            document.getElementById('step6-allowableV-val').innerText = V_allowable.toFixed(2);
+            document.getElementById('step6-diff').innerText = (V_allowable - halfW).toFixed(2);
+            document.getElementById('step6-Pshear').innerText = Pshear.toFixed(2);
+
+            // Step 7
+            document.getElementById('step7-Pb').innerText = Pbending.toFixed(2);
+            document.getElementById('step7-Ps').innerText = Pshear.toFixed(2);
+            document.getElementById('step7-Pfinal').innerText = Psafe.toFixed(2);
+
+            // Draw Section Canvas
+            drawSection(D, B, tf, hw, tw);
+        }
+
+        function drawSection(D, B, tf, hw, tw) {
+            const canvas = document.getElementById('sectionCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Scale to fit canvas (maintain proportions)
+            const margin = 35;
+            const maxRealDim = Math.max(B, D);
+            const scale = (canvas.width - (2 * margin)) / maxRealDim;
+
+            // Dynamic offsets
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            const w_canvas = B * scale;
+            const h_canvas = D * scale;
+            const tf_canvas = tf * scale;
+            const tw_canvas = tw * scale;
+
+            const left = cx - (w_canvas / 2);
+            const top = cy - (h_canvas / 2);
+
+            // Draw Top Flange
+            ctx.fillStyle = '#4f46e5'; // Indigo
+            ctx.fillRect(left, top, w_canvas, tf_canvas);
+
+            // Draw Web
+            ctx.fillStyle = '#10b981'; // Emerald
+            ctx.fillRect(cx - (tw_canvas / 2), top + tf_canvas, tw_canvas, h_canvas - (2 * tf_canvas));
+
+            // Draw Bottom Flange
+            ctx.fillStyle = '#4f46e5'; // Indigo
+            ctx.fillRect(left, top + h_canvas - tf_canvas, w_canvas, tf_canvas);
+
+            // Draw Neutral Axis (N.A.)
+            ctx.strokeStyle = '#ef4444'; // Red
+            ctx.setLineDash([5, 3]);
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(left - 15, cy);
+            ctx.lineTo(left + w_canvas + 15, cy);
+            ctx.stroke();
+            ctx.setLineDash([]); // reset
+
+            // N.A. Text label
+            ctx.fillStyle = '#ef4444';
+            ctx.font = 'bold 11px Inter, sans-serif';
+            ctx.fillText('N.A. (নিরপেক্ষ অক্ষ)', left + w_canvas + 18, cy + 4);
+
+            // Dimension lines and labels
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 1;
+            ctx.fillStyle = '#334155';
+            ctx.font = '11px Inter, sans-serif';
+
+            // 1. Overall Width B
+            ctx.beginPath();
+            ctx.moveTo(left, top - 8);
+            ctx.lineTo(left, top - 18);
+            ctx.moveTo(left + w_canvas, top - 8);
+            ctx.lineTo(left + w_canvas, top - 18);
+            ctx.moveTo(left, top - 13);
+            ctx.lineTo(left + w_canvas, top - 13);
+            ctx.stroke();
+            ctx.textAlign = 'center';
+            ctx.fillText(`${B} cm`, cx, top - 22);
+
+            // 2. Web Height hw
+            const webStart = top + tf_canvas;
+            const webEnd = top + h_canvas - tf_canvas;
+            ctx.beginPath();
+            ctx.moveTo(cx + (tw_canvas/2) + 8, webStart);
+            ctx.lineTo(cx + (tw_canvas/2) + 18, webStart);
+            ctx.moveTo(cx + (tw_canvas/2) + 8, webEnd);
+            ctx.lineTo(cx + (tw_canvas/2) + 18, webEnd);
+            ctx.moveTo(cx + (tw_canvas/2) + 13, webStart);
+            ctx.lineTo(cx + (tw_canvas/2) + 13, webEnd);
+            ctx.stroke();
+            ctx.textAlign = 'left';
+            ctx.fillText(`${hw} cm`, cx + (tw_canvas/2) + 22, (webStart + webEnd)/2 + 4);
+
+            // 3. Web thickness tw
+            ctx.beginPath();
+            ctx.moveTo(cx - (tw_canvas/2), cy + 25);
+            ctx.lineTo(cx + (tw_canvas/2), cy + 25);
+            ctx.stroke();
+            ctx.textAlign = 'center';
+            ctx.fillText(`${tw} cm`, cx, cy + 38);
+
+            // 4. Flange Thickness tf
+            ctx.beginPath();
+            ctx.moveTo(left - 8, top);
+            ctx.lineTo(left - 18, top);
+            ctx.moveTo(left - 8, top + tf_canvas);
+            ctx.lineTo(left - 18, top + tf_canvas);
+            ctx.moveTo(left - 13, top);
+            ctx.lineTo(left - 13, top + tf_canvas);
+            ctx.stroke();
+            ctx.textAlign = 'right';
+            ctx.fillText(`${tf} cm`, left - 22, top + (tf_canvas/2) + 4);
+        }
+
+        function switchTab(tabId) {
+            if (tabId === 'solution') {
+                document.getElementById('tab-solution').classList.remove('hidden');
+                document.getElementById('tab-theory').classList.add('hidden');
+                
+                document.getElementById('tab-btn-solution').classList.add('bg-white', 'text-slate-900', 'shadow-sm');
+                document.getElementById('tab-btn-solution').classList.remove('text-slate-600', 'hover:text-slate-900');
+                
+                document.getElementById('tab-btn-theory').classList.remove('bg-white', 'text-slate-900', 'shadow-sm');
+                document.getElementById('tab-btn-theory').classList.add('text-slate-600', 'hover:text-slate-900');
+            } else {
+                document.getElementById('tab-solution').classList.add('hidden');
+                document.getElementById('tab-theory').classList.remove('hidden');
+                
+                document.getElementById('tab-btn-theory').classList.add('bg-white', 'text-slate-900', 'shadow-sm');
+                document.getElementById('tab-btn-theory').classList.remove('text-slate-600', 'hover:text-slate-900');
+                
+                document.getElementById('tab-btn-solution').classList.remove('bg-white', 'text-slate-900', 'shadow-sm');
+                document.getElementById('tab-btn-solution').classList.add('text-slate-600', 'hover:text-slate-900');
+            }
+        }
+
+        // Run calculations on load
+        window.onload = function() {
+            resetToExamValues();
+        }
+    </script>
+</body>
+</html>
+
+```
